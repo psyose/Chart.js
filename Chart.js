@@ -475,7 +475,7 @@ window.Chart = function(context){
 			};
 
 			var maxSteps = Math.floor((scaleHeight / (labelHeight*0.66)));
-			var minSteps = (upperValue < Math.floor((scaleHeight / labelHeight*0.5))) ? upperValue : Math.floor((scaleHeight / labelHeight*0.5));
+			var minSteps = Math.floor((scaleHeight / labelHeight*0.5));
 			
 			return {
 				maxValue : upperValue,
@@ -1294,13 +1294,14 @@ window.Chart = function(context){
             graphRange = graphMax - graphMin;
             
             stepValue = Math.pow(10, rangeOrderOfMagnitude);
+            console.log(stepValue);
             
 	        numberOfSteps = Math.round(graphRange / stepValue);
 	        
 	        //Compare number of steps to the max and min for that size graph, and add in half steps if need be.	        
 	        while(numberOfSteps < minSteps || numberOfSteps > maxSteps) {
 	        	if (numberOfSteps < minSteps){
-			        stepValue = Math.round(stepValue / 2);
+	        		stepValue /= 2;
 			        numberOfSteps = Math.round(graphRange/stepValue);
 		        }
 		        else{
@@ -1308,7 +1309,14 @@ window.Chart = function(context){
 			        numberOfSteps = Math.round(graphRange/stepValue);
 		        }
 	        };
-
+	        
+	        // Monkey patch for no floats
+	        if (stepValue < 1) {
+	        	stepValue = 1;
+	        } else {
+	        	stepValue = Math.round(stepValue);
+	        }
+		        
 	        var labels = [];
 	        populateLabels(labelTemplateString, labels, numberOfSteps, graphMin, stepValue);
 		
